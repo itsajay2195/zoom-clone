@@ -18,6 +18,7 @@ const MenuButtons = () => {
                         <FontAwesome name={item.name} size={23} color="#efefef"></FontAwesome>
                     </TouchableOpacity>
                     <Text style={styles.menuText}>{item.title}</Text>
+                    
             </View>
             )
         })}
