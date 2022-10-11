@@ -1,26 +1,30 @@
-import { StyleSheet, Text, View, SafeAreaView, TextInput, TouchableOpacity } from 'react-native'
-import React, {useState} from 'react'
+import { StyleSheet, Text, View, SafeAreaView } from 'react-native'
+import React, {useState, useEffect} from 'react'
+import StartMeeting from '../components/StartMeeting'
+import { io } from 'socket.io-client'
 
+let socket
 const MeetingRoom = () => {
   const [name, setName] = useState('')
   const [roomId, setRoomId] = useState('')
+
+  const joinRoom = ()=>{
+    socket.emit('join-room',{roomId:roomId, userName:name})
+  }
+
+  useEffect(() => {
+    const API_URL = "http://192.168.0.102:3001"
+    socket = io(`${API_URL}`);
+    socket.on('connection', ()=> console.log("connected"))
+    // return () => {
+    //   second
+    // }
+  }, [])
+  
+
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.startMeetingContainer}>
-          <View style={styles.info}>
-            <TextInput placeholder='Enter Name' style={styles.textInput} value={name} onChangeText={text=> setName(text)}/>
-          </View>
-
-          <View style={styles.info}>
-            <TextInput placeholder='Enter your room id' style={styles.textInput} value={roomId} onChangeText={text=> setRoomId(text)}/>
-          </View>
-
-          <View style={{alignItems:'center'}}>
-            <TouchableOpacity style={styles.button}>
-                <Text style={{color:'white',textAlign:'center'}}> Start Meeting</Text>
-            </TouchableOpacity>
-          </View>
-      </View> 
+      <StartMeeting name={name} setName={setName} roomId={roomId} setRoomId={setRoomId} joinRoom={joinRoom} />
       
     </SafeAreaView>
   )
