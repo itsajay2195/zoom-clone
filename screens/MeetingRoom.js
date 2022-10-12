@@ -7,6 +7,7 @@ let socket
 const MeetingRoom = () => {
   const [name, setName] = useState('')
   const [roomId, setRoomId] = useState('')
+  const [users, setUSers] = useState(null)
 
   const joinRoom = ()=>{
     socket.emit('join-room',{roomId:roomId, userName:name})
@@ -16,6 +17,10 @@ const MeetingRoom = () => {
     const API_URL = "http://192.168.0.102:3001"
     socket = io(`${API_URL}`);
     socket.on('connection', ()=> console.log("connected"))
+    socket.on('all-users',users=>{
+      console.log(users)
+      setUSers(users)
+    })
     // return () => {
     //   second
     // }
