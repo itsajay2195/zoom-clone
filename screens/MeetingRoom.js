@@ -26,7 +26,7 @@ const icons = [{
 const MeetingRoom = () => {
   const [name, setName] = useState('')
   const [roomId, setRoomId] = useState('')
-  const [users, setUSers] = useState(null)
+  const [allUsers, setAllUsers] = useState([{fname: "Ajay"},{fname:"Vj"}])
   const [startCamera,setStartCamera] = useState(false);
 
   const _startCamera = async ()=>{
@@ -44,8 +44,8 @@ const MeetingRoom = () => {
     socket = io(`${API_URL}`);
     socket.on('connection', ()=> console.log("connected"))
     socket.on('all-users',users=>{
-      console.log('users are ',users)
-      setUSers(users)
+      // console.log('users are ',users)
+      // setNames(users)
     })
     // return () => {
     //   second
@@ -56,10 +56,20 @@ const MeetingRoom = () => {
   return (
     <SafeAreaView style={styles.container}>
       {startCamera? (
-      <SafeAreaView>
-          <Camera type={"front"} style={{width:'100%',height:'90%'}}>
-    
-          </Camera>
+        <SafeAreaView style={{flex:1}}>
+          <View style={styles.cameraContainer}>
+            <Camera type={"front"} style={{width:allUsers.length === 0 ? '100%' : 200,height:allUsers.length === 0? 600: 200}}>
+            </Camera>
+              {allUsers.map(e=>(
+                <View style={styles.activeUsers}>
+                  <Text style={{color:'white'}}>{e.fname}</Text>
+                </View>  
+                ))}
+  
+  
+          </View>
+
+        
           <View style={styles.menu}>
             {icons.map((item,index)=>(
               <TouchableOpacity  key={`${index}-cam_menu`} style={styles.tile}>
@@ -69,7 +79,7 @@ const MeetingRoom = () => {
             ))}
 
           </View>
-      </SafeAreaView>) : 
+          </SafeAreaView>) : 
       (<StartMeeting name={name} setName={setName} roomId={roomId} setRoomId={setRoomId} joinRoom={joinRoom} />)}
       
     </SafeAreaView>
@@ -90,7 +100,19 @@ const styles = StyleSheet.create({
     marginTop:15
   },
   textTile:{color:"white",marginTop:10},
-  menu:{paddingHorizontal:10,flexDirection:'row', justifyContent:'space-between'},
-
+  menu:{paddingHorizontal:10,flexDirection:'row', justifyContent:'space-between', paddingBottom:20},
+  cameraContainer:{
+    flex:1,
+    justifyContent:'center',
+    flexDirection:'row',
+    flexWrap:'wrap'
+  },
+  activeUsers:{
+      height:200,
+      width:200,
+      justifyContent:'center',
+      alignItems:'center',
+      borderWidth:1,
+  }
 
 })
