@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, SafeAreaView, Alert, TouchableOpacity } from 'react-native'
+import { StyleSheet, Text, View, SafeAreaView, Alert, TouchableOpacity, ScrollView } from 'react-native'
 import React, {useState, useEffect} from 'react'
 import StartMeeting from '../components/StartMeeting'
 import { io } from 'socket.io-client'
@@ -26,7 +26,7 @@ const icons = [{
 const MeetingRoom = () => {
   const [name, setName] = useState('')
   const [roomId, setRoomId] = useState('')
-  const [allUsers, setAllUsers] = useState([{fname: "Ajay"},{fname:"Vj"}])
+  const [allUsers, setAllUsers] = useState([])
   const [startCamera,setStartCamera] = useState(false);
 
   const _startCamera = async ()=>{
@@ -44,8 +44,8 @@ const MeetingRoom = () => {
     socket = io(`${API_URL}`);
     socket.on('connection', ()=> console.log("connected"))
     socket.on('all-users',users=>{
-      // console.log('users are ',users)
-      // setNames(users)
+      console.log('users are ',users)
+      setAllUsers(users)
     })
     // return () => {
     //   second
@@ -56,20 +56,20 @@ const MeetingRoom = () => {
   return (
     <SafeAreaView style={styles.container}>
       {startCamera? (
-        <SafeAreaView style={{flex:1}}>
-          <View style={styles.cameraContainer}>
-            <Camera type={"front"} style={{width:allUsers.length === 0 ? '100%' : 200,height:allUsers.length === 0? 600: 200}}>
-            </Camera>
-              {allUsers.map(e=>(
-                <View style={styles.activeUsers}>
-                  <Text style={{color:'white'}}>{e.fname}</Text>
-                </View>  
-                ))}
-  
-  
-          </View>
-
-        
+        <SafeAreaView style={{flex:1,}}>
+          <ScrollView style={{flex:1}} >
+            <View style={styles.cameraContainer}>
+              <Camera type={"front"} style={{width:allUsers.length <= 1 ? '100%' : 150,height:allUsers.length <= 1? 600: 150}}>
+              </Camera>
+                {allUsers.map(e=>(
+                  <View style={styles.activeUsers}>
+                    <Text style={{color:'white'}}>{e.userName}</Text>
+                  </View>  
+                  ))}
+    
+    
+            </View>
+          </ScrollView>
           <View style={styles.menu}>
             {icons.map((item,index)=>(
               <TouchableOpacity  key={`${index}-cam_menu`} style={styles.tile}>
@@ -103,13 +103,15 @@ const styles = StyleSheet.create({
   menu:{paddingHorizontal:10,flexDirection:'row', justifyContent:'space-between', paddingBottom:20},
   cameraContainer:{
     flex:1,
-    justifyContent:'center',
+    overflow:'hidden',
     flexDirection:'row',
-    flexWrap:'wrap'
+    flexWrap:'wrap',
+    justifyContent:'center',
+    alignContent:'center'
   },
   activeUsers:{
-      height:200,
-      width:200,
+      height:150,
+      width:150,
       justifyContent:'center',
       alignItems:'center',
       borderWidth:1,
